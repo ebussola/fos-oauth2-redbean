@@ -63,4 +63,24 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf('\ebussola\oauth\AccessToken', $access_token);
     }
 
+    public function testCreateAccessToken() {
+        $client_bean = $this->redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_CLIENTS);
+
+        $client = new \ebussola\oauth\client\Client($client_bean);
+        $data = array(
+            'xpto' => 'blah'
+        );
+        $expires = time() + 3600;
+        $scope = 'read write';
+        $token = md5('createaccesstoken');
+        $this->redbean_storage->createAccessToken($token, $client, $data, $expires, $scope);
+
+        $access_token = $this->redbean_storage->getAccessToken($token);
+        $this->assertEquals($access_token->getClientId(), $client->id);
+        $this->assertEquals($access_token->getData(), $data);
+        $this->assertEquals($access_token->getExpiresIn(), $expires);
+        $this->assertEquals($access_token->getScope(), $scope);
+        $this->assertEquals($access_token->getToken(), $token);
+    }
+
 }

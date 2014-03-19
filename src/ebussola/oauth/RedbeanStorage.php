@@ -100,7 +100,16 @@ class RedbeanStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_4
      */
     public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = null) {
-        // TODO: Implement createAccessToken() method.
+        $access_token_bean = $this->redbean->dispense(self::TABLE_ACCESS_TOKENS);
+        $access_token = new AccessToken($access_token_bean);
+
+        $access_token->token = $oauth_token;
+        $access_token->client_id = $client->getPublicId();
+        $access_token->data = $data;
+        $access_token->expires_in = $expires;
+        $access_token->scope = $scope;
+
+        $this->redbean->store($access_token->getBean());
     }
 
     /**
