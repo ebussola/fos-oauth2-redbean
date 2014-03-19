@@ -9,6 +9,7 @@
 namespace ebussola\oauth;
 
 
+use ebussola\oauth\accesstoken\AccessToken;
 use \OAuth2\Model\IOAuth2AccessToken;
 use OAuth2\IOAuth2Storage;
 use OAuth2\Model\IOAuth2Client;
@@ -16,6 +17,7 @@ use OAuth2\Model\IOAuth2Client;
 class RedbeanStorage implements IOAuth2Storage {
 
     const TABLE_CLIENTS = 'clients';
+    const TABLE_ACCESS_TOKENS = 'accesstokens';
 
     /**
      * @var \RedBean_Facade
@@ -73,7 +75,10 @@ class RedbeanStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_7
      */
     public function getAccessToken($oauth_token) {
-        // TODO: Implement getAccessToken() method.
+        $access_token_bean = $this->redbean->findOne(self::TABLE_ACCESS_TOKENS, ' token = ? ', array($oauth_token));
+        $access_token = new AccessToken($access_token_bean);
+
+        return $access_token;
     }
 
     /**

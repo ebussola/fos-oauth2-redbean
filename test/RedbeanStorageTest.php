@@ -34,7 +34,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
         $this->redbean->store($client->getBean());
 
         $client = $this->redbean_storage->getClient(1);
-        $this->assertInstanceOf('\ebussola\oauth\client\Client', $client);
+        $this->assertInstanceOf('\ebussola\oauth\Client', $client);
         $this->assertEquals(array('localhost'), $client->redirect_uris);
     }
 
@@ -46,6 +46,21 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
 
         $this->assertFalse($this->redbean_storage->checkClientCredentials($client, 'something'));
         $this->assertTrue($this->redbean_storage->checkClientCredentials($client, 'shhhh_this_is_secret'));
+    }
+
+    public function testGetAccessToken() {
+        $access_token_bean = $this->redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_ACCESS_TOKENS);
+        $access_token = new \ebussola\oauth\accesstoken\AccessToken($access_token_bean);
+        $access_token->client_id = 1;
+        $access_token->expires_in = 3600;
+        $access_token->has_expired = false;
+        $access_token->token = md5('token');
+        $access_token->scope = 'read,write';
+        $access_token->data = array();
+        $this->redbean->store($access_token->getBean());
+
+        $access_token = $this->redbean_storage->getAccessToken(md5('token'));
+        $this->assertInstanceOf('\ebussola\oauth\AccessToken', $access_token);
     }
 
 }
