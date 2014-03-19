@@ -35,7 +35,7 @@ class RedbeanStorage implements IOAuth2Storage {
      */
     public function getClient($client_id) {
         $client_bean = $this->redbean->load(self::TABLE_CLIENTS, $client_id);
-        $client = new Client($client_bean);
+        $client = new client\Client($client_bean);
 
         return $client;
     }
@@ -43,7 +43,7 @@ class RedbeanStorage implements IOAuth2Storage {
     /**
      * Make sure that the client credentials are valid.
      *
-     * @param IOAuth2Client $client
+     * @param IOAuth2Client|Client $client
      * The client for which to check credentials.
      * @param string        $client_secret
      * (optional) If a secret is required, check that they've given the right one.
@@ -57,7 +57,7 @@ class RedbeanStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_3
      */
     public function checkClientCredentials(IOAuth2Client $client, $client_secret = null) {
-        // TODO: Implement checkClientCredentials() method.
+        return $client->client_secret == $client_secret;
     }
 
     /**
