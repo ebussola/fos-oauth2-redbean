@@ -33,7 +33,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
         $client->client_secret = '823984y9ncy9ny4hh284c823';
         $this->redbean->store($client->getBean());
 
-        $client = $this->redbean_storage->getClient(1);
+        $client = $this->redbean_storage->getClient($client_bean->id);
         $this->assertInstanceOf('\ebussola\oauth\Client', $client);
         $this->assertEquals(array('localhost'), $client->redirect_uris);
     }

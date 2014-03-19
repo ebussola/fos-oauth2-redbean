@@ -130,6 +130,7 @@ class RedbeanStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_4
      */
     public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type) {
-        // TODO: Implement checkRestrictedGrantType() method.
+        return true;
     }
+
 }
