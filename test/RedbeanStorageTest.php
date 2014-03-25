@@ -61,6 +61,15 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
 
         $access_token = $this->redbean_storage->getAccessToken(md5('token'));
         $this->assertInstanceOf('\ebussola\oauth\AccessToken', $access_token);
+        $this->assertFalse($access_token->hasExpired());
+    }
+
+    /**
+     * Should return an expired AccessToken
+     */
+    public function testGetAccessTokenWithInvalidToken() {
+        $access_token = $this->redbean_storage->getAccessToken(md5('invalid_token'));
+        $this->assertTrue($access_token->hasExpired());
     }
 
     public function testCreateAccessToken() {

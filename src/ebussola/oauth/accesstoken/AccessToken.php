@@ -27,7 +27,7 @@ class AccessToken implements \OAuth2\Model\IOAuth2AccessToken, \ebussola\oauth\A
         $this->id = $bean->id;
         $this->client_id = $bean->client_id;
         $this->expires_in = $bean->expires_in;
-        $this->has_expired = $bean->has_expired;
+        $this->has_expired = ($bean->has_expired === null) ? true : (bool) $bean->has_expired;
         $this->token = $bean->token;
         $this->scope = $bean->scope;
         $this->data = unserialize($bean->data);

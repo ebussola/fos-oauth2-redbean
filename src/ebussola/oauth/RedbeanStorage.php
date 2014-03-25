@@ -79,6 +79,9 @@ class RedbeanStorage implements \OAuth2\IOAuth2GrantCode {
      */
     public function getAccessToken($oauth_token) {
         $access_token_bean = $this->redbean->findOne(self::TABLE_ACCESS_TOKENS, ' token = ? ', array($oauth_token));
+        if (!$access_token_bean) {
+            $access_token_bean = $this->redbean->dispense(self::TABLE_ACCESS_TOKENS);
+        }
         $access_token = new AccessToken($access_token_bean);
 
         return $access_token;
@@ -110,6 +113,7 @@ class RedbeanStorage implements \OAuth2\IOAuth2GrantCode {
         $access_token->client_id = $client->getPublicId();
         $access_token->data = $data;
         $access_token->expires_in = $expires;
+        $access_token->has_expired = false;
         $access_token->scope = $scope;
 
         $this->redbean->store($access_token->getBean());
