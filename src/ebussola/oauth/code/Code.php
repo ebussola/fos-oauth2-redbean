@@ -31,7 +31,7 @@ class Code implements \ebussola\oauth\Code, \OAuth2\Model\IOAuth2AuthCode {
         $this->redirect_uri = $bean->redirect_uri;
         $this->client_id = $bean->client_id;
         $this->expires_in = $bean->expires_in;
-        $this->has_expired = $bean->has_expired;
+        $this->has_expired = ($bean->has_expired === null) ? true : (bool) $bean->has_expired;
         $this->token = $bean->token;
         $this->scope = $bean->scope;
         $this->data = $bean->data;
