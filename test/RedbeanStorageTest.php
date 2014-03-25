@@ -83,4 +83,58 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($access_token->getToken(), $token);
     }
 
+    public function testCreateAuthCode() {
+        $client_bean = $this->redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_CODES);
+        $client = new \ebussola\oauth\client\Client($client_bean);
+        $code = md5(uniqid(time()));
+        $data = [];
+        $redirect_uri = 'http://google.com';
+        $expires = time() + 3600;
+        $this->redbean_storage->createAuthCode($code, $client, $data, $redirect_uri, $expires);
+        $this->redbean_storage->createAuthCode('fake', $client, $data, $redirect_uri, $expires);
+
+        $results = $this->redbean->findAll(\ebussola\oauth\RedbeanStorage::TABLE_CODES, 'code = ?', [$code]);
+        $this->assertCount(1, $results);
+
+        $code_bean = reset($results);
+        $this->assertEquals($code_bean->client_id, $client->id);
+        $this->assertEquals($code_bean->redirect_uri, $redirect_uri);
+        $this->assertEquals($code_bean->expires_in, $expires);
+        $this->assertEquals($code_bean->has_expired, 0);
+        $this->assertEquals($code_bean->token, null);
+    }
+
+    public function testGetAuthCode() {
+        $client_bean = $this->redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_CODES);
+        $client = new \ebussola\oauth\client\Client($client_bean);
+        $code_str = md5(uniqid(time()));
+        $data = [];
+        $redirect_uri = 'http://google.com';
+        $expires = time() + 3600;
+        $this->redbean_storage->createAuthCode($code_str, $client, $data, $redirect_uri, $expires);
+
+        $code = $this->redbean_storage->getAuthCode($code_str);
+        $this->assertInstanceOf('\ebussola\oauth\Code', $code);
+        $this->assertEquals($code->client_id, $client->id);
+        $this->assertEquals($code->redirect_uri, $redirect_uri);
+        $this->assertEquals($code->expires_in, $expires);
+        $this->assertEquals($code->has_expired, 0);
+        $this->assertEquals($code->token, null);
+    }
+
+    public function testMarkAuthCodeAsUsed() {
+        $client_bean = $this->redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_CODES);
+        $client = new \ebussola\oauth\client\Client($client_bean);
+        $code_str = md5(uniqid(time()));
+        $data = [];
+        $redirect_uri = 'http://google.com';
+        $expires = time() + 3600;
+        $this->redbean_storage->createAuthCode($code_str, $client, $data, $redirect_uri, $expires);
+
+        $this->redbean_storage->markAuthCodeAsUsed($code_str);
+
+        $results = $this->redbean->findAll(\ebussola\oauth\RedbeanStorage::TABLE_CODES, 'code = ?', [$code_str]);
+        $this->assertCount(0, $results);
+    }
+
 }
