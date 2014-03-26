@@ -14,16 +14,16 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     private $oauth2;
 
     /**
-     * @var \ebussola\oauth\RedbeanStorage
+     * @var GrantCode
      */
     private $storage;
 
     public function setUp() {
         $redbean = new RedBean_Facade();
         $redbean->setup('sqlite::memory:');
-        $this->storage = new \ebussola\oauth\RedbeanStorage($redbean);
+        $this->storage = new GrantCode($redbean);
 
-        $client_bean = $redbean->dispense(\ebussola\oauth\RedbeanStorage::TABLE_CLIENTS);
+        $client_bean = $redbean->dispense(GrantCode::TABLE_CLIENTS);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $client->redirect_uris = array();
         $client->client_secret = 'xpto';
