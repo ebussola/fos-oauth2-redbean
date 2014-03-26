@@ -10,11 +10,12 @@ namespace ebussola\oauth\redbean;
 
 
 use ebussola\oauth\accesstoken\AccessToken;
+use ebussola\oauth\Client;
 use OAuth2\IOAuth2Storage;
 use \OAuth2\Model\IOAuth2AccessToken;
 use OAuth2\Model\IOAuth2Client;
 
-abstract class AbstractStorage implements IOAuth2Storage {
+class Storage implements IOAuth2Storage {
 
     /**
      * Table name for the models
@@ -39,14 +40,19 @@ abstract class AbstractStorage implements IOAuth2Storage {
      *
      * @param string $client_id
      *
-     * @return IOAuth2Client
+     * @return IOAuth2Client | Client
      */
-    abstract public function getClient($client_id);
+    public function getClient($client_id) {
+        $client_bean = $this->redbean->load($this->tables['client'], $client_id);
+        $client = new \ebussola\oauth\client\Client($client_bean);
+
+        return $client;
+    }
 
     /**
      * Make sure that the client credentials are valid.
      *
-     * @param IOAuth2Client $client
+     * @param IOAuth2Client | Client $client
      * The client for which to check credentials.
      * @param string        $client_secret
      * (optional) If a secret is required, check that they've given the right one.
@@ -59,7 +65,9 @@ abstract class AbstractStorage implements IOAuth2Storage {
      *
      * @ingroup oauth2_section_3
      */
-    abstract public function checkClientCredentials(IOAuth2Client $client, $client_secret = null);
+    public function checkClientCredentials(IOAuth2Client $client, $client_secret = null) {
+        return $client->client_secret == $client_secret;
+    }
 
     /**
      * Look up the supplied oauth_token from storage.

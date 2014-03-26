@@ -14,7 +14,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     private $oauth2;
 
     /**
-     * @var GrantCode
+     * @var \ebussola\oauth\redbean\GrantCode
      */
     private $storage;
 
@@ -26,7 +26,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
             'access_token' => 'accesstokens',
             'code'         => 'codes'
         );
-        $this->storage = new GrantCode($redbean, $tables);
+        $this->storage = new \ebussola\oauth\redbean\GrantCode($redbean, $tables);
 
         $client_bean = $redbean->dispense($tables['client']);
         $client = new \ebussola\oauth\client\Client($client_bean);

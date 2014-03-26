@@ -7,5 +7,3 @@
  */
 
 require __DIR__ . '/../vendor/autoload.php';
-
-require 'stubs/GrantCode.php';

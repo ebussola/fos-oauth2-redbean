@@ -14,7 +14,7 @@ use OAuth2\IOAuth2GrantCode;
 use OAuth2\Model\IOAuth2AuthCode;
 use OAuth2\Model\IOAuth2Client;
 
-abstract class AbstractGrantCode extends AbstractStorage implements IOAuth2GrantCode {
+class GrantCode extends Storage implements IOAuth2GrantCode {
 
     /**
      * Fetch authorization code data (probably the most common grant type).

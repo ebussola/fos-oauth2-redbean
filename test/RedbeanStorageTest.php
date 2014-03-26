@@ -1,4 +1,6 @@
 <?php
+use ebussola\oauth\redbean\GrantCode;
+
 /**
  * Created by PhpStorm.
  * User: Leonardo Shinagawa
