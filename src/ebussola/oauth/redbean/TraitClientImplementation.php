@@ -22,7 +22,7 @@ trait TraitClientImplementation {
      * @return IOAuth2Client | Client
      */
     public function getClient($client_id) {
-        $client_bean = $this->redbean->load(self::TABLE_CLIENTS, $client_id);
+        $client_bean = $this->redbean->load($this->tables['client'], $client_id);
         $client = new \ebussola\oauth\client\Client($client_bean);
 
         return $client;

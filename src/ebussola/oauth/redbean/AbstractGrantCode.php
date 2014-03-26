@@ -33,7 +33,7 @@ abstract class AbstractGrantCode extends AbstractStorage implements IOAuth2Grant
      * @ingroup oauth2_section_4
      */
     public function getAuthCode($code) {
-        $code_bean = $this->redbean->findOne(self::TABLE_CODES, 'code = ?', [$code]);
+        $code_bean = $this->redbean->findOne($this->tables['code'], 'code = ?', [$code]);
         $code = new Code($code_bean);
 
         return $code;
@@ -66,7 +66,7 @@ abstract class AbstractGrantCode extends AbstractStorage implements IOAuth2Grant
      * @ingroup oauth2_section_4
      */
     public function createAuthCode($code_str, IOAuth2Client $client, $data, $redirect_uri, $expires, $scope = null) {
-        $code_bean = $this->redbean->dispense(self::TABLE_CODES);
+        $code_bean = $this->redbean->dispense($this->tables['code']);
         $code = new Code($code_bean);
 
         $code->code = $code_str;

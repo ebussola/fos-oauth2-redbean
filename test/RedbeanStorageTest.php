@@ -18,15 +18,22 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
      */
     private $redbean;
 
+    private $tables;
+
     public function setUp() {
         $this->redbean = new RedBean_Facade();
         $this->redbean->setup('sqlite::memory:');
 
-        $this->redbean_storage = new GrantCode($this->redbean);
+        $this->tables = array(
+            'client'       => 'clients',
+            'access_token' => 'accesstokens',
+            'code'         => 'codes'
+        );
+        $this->redbean_storage = new GrantCode($this->redbean, $this->tables);
     }
 
     public function testGetClient() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CLIENTS);
+        $client_bean = $this->redbean->dispense($this->tables['client']);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $client->id = 1;
         $client->redirect_uris = array('localhost');
@@ -39,7 +46,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCheckClientCredentials() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CLIENTS);
+        $client_bean = $this->redbean->dispense($this->tables['client']);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $client->redirect_uris = array('localhost');
         $client->client_secret = 'shhhh_this_is_secret';
@@ -49,7 +56,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetAccessToken() {
-        $access_token_bean = $this->redbean->dispense(GrantCode::TABLE_ACCESS_TOKENS);
+        $access_token_bean = $this->redbean->dispense($this->tables['access_token']);
         $access_token = new \ebussola\oauth\accesstoken\AccessToken($access_token_bean);
         $access_token->client_id = 1;
         $access_token->expires_in = 3600;
@@ -73,7 +80,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCreateAccessToken() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CLIENTS);
+        $client_bean = $this->redbean->dispense($this->tables['client']);
 
         $client = new \ebussola\oauth\client\Client($client_bean);
         $data = array(
@@ -93,7 +100,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testCreateAuthCode() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CODES);
+        $client_bean = $this->redbean->dispense($this->tables['code']);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $code = md5(uniqid(time()));
         $data = [];
@@ -102,7 +109,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
         $this->redbean_storage->createAuthCode($code, $client, $data, $redirect_uri, $expires);
         $this->redbean_storage->createAuthCode('fake', $client, $data, $redirect_uri, $expires);
 
-        $results = $this->redbean->findAll(GrantCode::TABLE_CODES, 'code = ?', [$code]);
+        $results = $this->redbean->findAll($this->tables['code'], 'code = ?', [$code]);
         $this->assertCount(1, $results);
 
         $code_bean = reset($results);
@@ -114,7 +121,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testGetAuthCode() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CODES);
+        $client_bean = $this->redbean->dispense($this->tables['code']);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $code_str = md5(uniqid(time()));
         $data = [];
@@ -132,7 +139,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testMarkAuthCodeAsUsed() {
-        $client_bean = $this->redbean->dispense(GrantCode::TABLE_CODES);
+        $client_bean = $this->redbean->dispense($this->tables['code']);
         $client = new \ebussola\oauth\client\Client($client_bean);
         $code_str = md5(uniqid(time()));
         $data = [];
@@ -142,7 +149,7 @@ class RedbeanStorageTest extends PHPUnit_Framework_TestCase {
 
         $this->redbean_storage->markAuthCodeAsUsed($code_str);
 
-        $results = $this->redbean->findAll(GrantCode::TABLE_CODES, 'code = ?', [$code_str]);
+        $results = $this->redbean->findAll($this->tables['code'], 'code = ?', [$code_str]);
         $this->assertCount(0, $results);
     }
 

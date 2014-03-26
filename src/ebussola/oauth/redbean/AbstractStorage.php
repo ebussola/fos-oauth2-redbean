@@ -16,18 +16,22 @@ use OAuth2\Model\IOAuth2Client;
 
 abstract class AbstractStorage implements IOAuth2Storage {
 
-    /** @todo colocar isso em um arquivo de configuração */
-    const TABLE_CLIENTS = 'clients';
-    const TABLE_ACCESS_TOKENS = 'accesstokens';
-    const TABLE_CODES = 'codes';
+    /**
+     * Table name for the models
+     *
+     * @var array
+     * table name for: client, access_token or code
+     */
+    protected $tables;
 
     /**
      * @var \RedBean_Facade
      */
     protected $redbean;
 
-    public function __construct(\RedBean_Facade $redbean) {
+    public function __construct(\RedBean_Facade $redbean, array $tables) {
         $this->redbean = $redbean;
+        $this->tables = $tables;
     }
 
     /**
@@ -70,9 +74,9 @@ abstract class AbstractStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_7
      */
     public function getAccessToken($oauth_token) {
-        $access_token_bean = $this->redbean->findOne(self::TABLE_ACCESS_TOKENS, ' token = ? ', array($oauth_token));
+        $access_token_bean = $this->redbean->findOne($this->tables['access_token'], ' token = ? ', array($oauth_token));
         if (!$access_token_bean) {
-            $access_token_bean = $this->redbean->dispense(self::TABLE_ACCESS_TOKENS);
+            $access_token_bean = $this->redbean->dispense($this->tables['access_token']);
         }
         $access_token = new AccessToken($access_token_bean);
 
@@ -98,7 +102,7 @@ abstract class AbstractStorage implements IOAuth2Storage {
      * @ingroup oauth2_section_4
      */
     public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = null) {
-        $access_token_bean = $this->redbean->dispense(self::TABLE_ACCESS_TOKENS);
+        $access_token_bean = $this->redbean->dispense($this->tables['access_token']);
         $access_token = new AccessToken($access_token_bean);
 
         $access_token->token = $oauth_token;
